@@ -47,13 +47,9 @@ def reference_fibonacci(first,second,count):
     return output
 
 
-def demonstration(directory,loss=0.35,corruption=0.05,seed=19770815,first=0,second=1,terms=16):
+def simulate_channel(frames, loss, corruption, seed):
     if not 0<=loss<=1 or not 0<=corruption<=1:
         raise ValueError('Loss and corruption must be in [0,1]')
-    payload = macchina.make_seed(first,second,terms)
-    transmission = trasporto.encode(payload,block_bytes=128,repair_multiplier=2,seed=seed)
-    manifest,packets = transmission['manifest'],transmission['packets']
-    frames = [trame.frame(manifest,packet) for packet in packets]
     rng = random.Random(seed)
     received, lost, altered = [],0,0
     for item in frames:
@@ -70,6 +66,15 @@ def demonstration(directory,loss=0.35,corruption=0.05,seed=19770815,first=0,seco
     rng.shuffle(received)
     # Some irrelevant bytes precede the signal; framing must find the first sync.
     impaired = b'LOCAL_CHANNEL_NOISE\x00\xff'+b''.join(received)
+    return impaired, lost, altered
+
+
+def demonstration(directory,loss=0.35,corruption=0.05,seed=19770815,first=0,second=1,terms=16):
+    payload = macchina.make_seed(first,second,terms)
+    transmission = trasporto.encode(payload,block_bytes=128,repair_multiplier=2,seed=seed)
+    manifest,packets = transmission['manifest'],transmission['packets']
+    frames = [trame.frame(manifest,packet) for packet in packets]
+    impaired, lost, altered = simulate_channel(frames, loss, corruption, seed)
     recovered = trame.recover(impaired)
     compact = {key:value for key,value in recovered.items() if key!='payload_hex'}
     execution = None
@@ -84,7 +89,7 @@ def demonstration(directory,loss=0.35,corruption=0.05,seed=19770815,first=0,seco
         content='Authored algorithm, not an AI model or recovered Wow message.',
         seed_bytes=len(payload),seed_sha256=hashlib.sha256(payload).hexdigest(),
         source_blocks=manifest['block_count'],packets_sent=len(packets),
-        packets_lost=lost,frames_altered=altered,frames_received=len(received),
+        packets_lost=lost,frames_altered=altered,frames_received=len(frames)-lost,
         loss_probability=loss,corruption_probability_among_survivors=corruption,
         random_seed=seed,reconstruction=compact,execution=execution,
         source_bytes_match=True if execution else None,
