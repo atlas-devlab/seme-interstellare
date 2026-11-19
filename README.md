@@ -1,0 +1,32 @@
+# Seme Interstellare
+
+Seme Interstellare è un esperimento Python sulla trasmissione di un programma attraverso un canale con perdita di pacchetti. Il messaggio contiene la mappa delle istruzioni di una piccola macchina, esempi verificabili e un programma che calcola la sequenza di Fibonacci.
+
+## Avvio
+
+Serve Python 3.10 o successivo. Su Windows puoi aprire `Avvia_demo.cmd`.
+
+```text
+python demo.py
+python demo.py ricevi risultati/demo/ricevuto.bin
+python verifica.py
+```
+
+Nella prova predefinita il mittente produce 66 pacchetti. Il canale ne perde 16 e ne altera 2. Il ricevitore ricostruisce 22 blocchi su 22 e verifica l'identità del messaggio prima di interpretare il programma. Il risultato parte da `0, 1, 1, 2, 3, 5, 8` e arriva a `610`.
+
+Per cambiare i due valori iniziali o il canale, usa `python demo.py demo --help`. Per run paralleli usa cartelle di output distinte.
+
+## Come funziona
+
+1. `macchina.py` costruisce la capsula con bytecode, definizioni e vettori di prova.
+2. `trasporto.py` divide la capsula in blocchi e aggiunge equazioni XOR di riparazione. Il ricevitore restituisce il messaggio quando le equazioni determinano tutti i blocchi e l'hash coincide.
+3. `trame.py` ripete il manifest in ogni frame. Usa il CRC e il marcatore identico per riconoscere i frame validi anche dopo un'interruzione nel flusso.
+4. `demo.py` genera il canale locale e controlla l'output con una seconda implementazione di Fibonacci.
+
+Il ricevitore conosce già la codifica JSON, il framing e le operazioni della macchina. L'interprete limita istruzioni, stack e output. CRC e SHA-256 verificano l'integrità del contenuto ricevuto. L'identità del mittente richiederebbe un meccanismo di autenticazione separato.
+
+Il canale è simulato tramite file. Il contenuto della demo è un algoritmo, e i risultati riguardano il suo trasporto controllato. Per le misure storiche che hanno ispirato l'esperimento, vedi [Laboratorio Wow!](docs/laboratorio-wow.md).
+
+## Licenza
+
+GNU General Public License, versione 3, [`GPL-3.0-only`](LICENSE).

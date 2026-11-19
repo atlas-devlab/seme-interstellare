@@ -1,0 +1,7 @@
+__pycache__/
+*.py[cod]
+.venv/
+.env
+risultati/
+verifica.json
+MANIFEST_SHA256.txt
