@@ -62,7 +62,11 @@ def evaluate(model, examples):
 
 
 def receive(wire, examples):
-    recovered = trame.recover(wire)
+    return infer_recovery(trame.recover(wire), examples)
+
+
+def infer_recovery(recovered, examples):
+    recovered = dict(recovered)
     payload_hex = recovered.pop('payload_hex')
     if recovered['status'] != 'complete':
         return recovered, None, None
@@ -70,10 +74,10 @@ def receive(wire, examples):
     return recovered, restored, evaluate(load_model(restored), examples)
 
 
-def make_frames(payload, seed):
+def make_frames(payload, seed, *, serializer=trame.frame):
     transmission = trasporto.encode(payload, block_bytes=128, repair_multiplier=2, seed=seed)
     manifest, packets = transmission['manifest'], transmission['packets']
-    return manifest, [trame.frame(manifest, packet) for packet in packets]
+    return manifest, [serializer(manifest, packet) for packet in packets]
 
 
 def campaign(repetitions=24):

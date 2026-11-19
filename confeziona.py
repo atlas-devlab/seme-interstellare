@@ -13,6 +13,9 @@ SOURCE_FILES = [
     'Avvia_demo_AI.cmd', 'demo_ai.py', 'modello_ai.py', 'addestra_ai.py',
     'test_modello_ai.py', 'test_demo_ai.py', 'models/cifre.json',
     'models/cifre-addestramento.json', 'models/cifre-esempi.json',
+    'radio.py', 'radio_phy.py', 'radio_medie.py', 'test_radio.py',
+    'requirements-radio.txt', 'docs/radio.md',
+    'confronta_radio.py', 'radio_compatto.py', 'test_radio_compatto.py',
 ]
 
 

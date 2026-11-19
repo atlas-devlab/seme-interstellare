@@ -6,6 +6,10 @@ Seme Interstellare è un esperimento Python sulla trasmissione di programmi e mo
 
 Su Windows apri `Avvia_demo_AI.cmd`. Da terminale, esegui `python demo_ai.py`. L'inferenza usa la sola libreria standard di Python. Per i risultati sull'intero test e le prove a diversi tassi di perdita, vedi [Modello AI e risultati](docs/modello-ai.md).
 
+## Demo radio
+
+La demo radio aggiunge modulazione FSK, rumore, interruzioni consecutive e un inviluppo a campana. Il ricevitore parte dai campioni in banda base e ricostruisce il modello dai pacchetti che superano il CRC. [Comandi, risultati e limiti](docs/radio.md)
+
 ## Avvio
 
 Serve Python 3.10 o successivo. Su Windows puoi aprire `Avvia_demo.cmd`.
